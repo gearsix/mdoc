@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include <cmark.h>
 
@@ -50,6 +51,11 @@ size_t cmark(const size_t bufsiz, FILE *in, FILE *out)
 	return n;
 }
 
+void cleanexit() {
+	printfoot();
+	exit(SIGINT);
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc > 1 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--usage") == 0)) {
@@ -73,7 +79,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	void (*sig)(int) = 0;
+	sig = signal(SIGINT, cleanexit);
+
 	printhead(title, author);
-	while (cmark(BUFSIZ, stdin, stdout) == BUFSIZ);
+	while (!sig && cmark(BUFSIZ, stdin, stdout) == BUFSIZ);
 	printfoot();
 }
