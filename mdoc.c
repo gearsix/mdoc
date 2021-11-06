@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <cmark.h>
+
 
 void usage()
 {
@@ -14,9 +16,9 @@ void printhead(const char *title, const char *author)
 	puts("<html lang=\"en\">");
 	puts("<head>");
 	puts("  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
-	if (title)
+	if (title && strlen(title) > 0)
 		printf("  <title>%s</title>\n", title);
-	if (author)
+	if (title && strlen(author) > 0)
 		printf("  <meta name=\"author\">%s</meta>\n", title);
 	puts("  <style>");
 	puts("    body {");
@@ -36,6 +38,16 @@ void printfoot()
 {
 	puts("</body>");
 	puts("</html>");
+}
+
+size_t cmark(const size_t bufsiz, FILE *in, FILE *out)
+{
+	char buf[bufsiz];
+	size_t n = fread(buf, sizeof(char), BUFSIZ, in);
+	char *html = cmark_markdown_to_html(buf, strlen(buf), 0);
+	fprintf(out, "%s", html);
+	free(html);
+	return n;
 }
 
 int main(int argc, char *argv[])
@@ -62,15 +74,6 @@ int main(int argc, char *argv[])
 	}
 
 	printhead(title, author);
-
-	int n = 0;
-	char buf[BUFSIZ];
-	do {
-		n = fread(buf, sizeof(char), BUFSIZ, stdin);
-		char *html = cmark_markdown_to_html(buf, strlen(buf), 0);
-		printf("%s", html);
-		free(html);
-	} while (n == BUFSIZ);
-	
+	while (cmark(BUFSIZ, stdin, stdout) == BUFSIZ);
 	printfoot();
 }
