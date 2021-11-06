@@ -1,0 +1,14 @@
+
+mdoc
+
+A very basic wrapper around *cmark* that adds text need to build
+a fully-formed HTML file. It also adds some minimal CSS styling.
+
+	./mdoc [-t TITLE] [-a AUTHOR] < file.md > file.html
+
+It uses `stdin` to read input data, so you'll need to pipe the
+Markdown text to it (e.g. shown above). Did it like thie because
+this is a quick & dirty tool.
+
+- gearsix
+
