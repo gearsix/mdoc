@@ -1,2 +1,2 @@
 all:
-	${CC} -Wall -lcmark -o mdoc mdoc.c
+	${CC} -Wall -Iinc -Llib -lcmark -o mdoc mdoc.c
