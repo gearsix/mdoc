@@ -8,7 +8,7 @@
 
 void usage()
 {
-	puts("usage: ./mdoc TITLE AUTHOR < file.md > file.html\n");
+	puts("usage: ./mdoc TITLE AUTHOR < file.md > file.html");
 }
 
 void printhead(const char *title, const char *author)
