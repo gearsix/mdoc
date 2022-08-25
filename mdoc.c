@@ -38,17 +38,17 @@ void printhead(const char *title, const char *author)
 void printfoot()
 {
 	puts("</body>");
-	puts("</html>");
+	puts("</html>\0");
 }
 
-size_t cmark(const size_t bufsiz, FILE *in, FILE *out)
+void cmark(FILE *in, FILE *out)
 {
-	char buf[bufsiz];
-	size_t n = fread(buf, sizeof(char), BUFSIZ, in);
-	char *html = cmark_markdown_to_html(buf, strlen(buf), 0);
+	const int opts = (CMARK_OPT_UNSAFE|CMARK_OPT_VALIDATE_UTF8);
+	cmark_node *n = cmark_parse_file(in, opts);
+	char *html = cmark_render_html(n, opts);
 	fprintf(out, "%s", html);
+	cmark_node_free(n);
 	free(html);
-	return n;
 }
 
 void cleanexit() {
@@ -79,10 +79,11 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	void (*sig)(int) = 0;
-	sig = signal(SIGINT, cleanexit);
+	signal(SIGINT, cleanexit);
+
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 	printhead(title, author);
-	while (!sig && cmark(BUFSIZ, stdin, stdout) == BUFSIZ);
+	cmark(stdin, stdout);
 	printfoot();
 }
